@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 19 ao?t 2013 15:41:19 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+  <class catalog="formations" name="fr.villemelun.formations.models.Formations" table="formations">
+    <id name="id" type="java.lang.Integer">
+      <column name="id"/>
+      <generator class="identity"/>
+    </id>
+    <many-to-one class="fr.villemelun.formations.models.Typeformations" fetch="select" name="typeformations">
+      <column name="typeformationsId" not-null="true"/>
+    </many-to-one>
+    <many-to-one class="fr.villemelun.formations.models.Listevaleurs" fetch="select" name="listevaleurs">
+      <column name="listevaleursId"/>
+    </many-to-one>
+    <many-to-one class="fr.villemelun.formations.models.Agents" fetch="select" name="agents">
+      <column name="agentId" not-null="true"/>
+    </many-to-one>
+    <property name="intitule" type="string">
+      <column name="intitule"/>
+    </property>
+    <property name="organisme" type="string">
+      <column name="organisme"/>
+    </property>
+    <property name="cout" type="java.lang.Integer">
+      <column name="cout"/>
+    </property>
+    <property name="projet" type="string">
+      <column length="1" name="projet"/>
+    </property>
+    <property name="dif" type="string">
+      <column length="1" name="dif"/>
+    </property>
+    <property name="debutant" type="string">
+      <column length="1" name="debutant"/>
+    </property>
+    <property name="reconversion" type="string">
+      <column length="1" name="reconversion"/>
+    </property>
+    <property name="initiation" type="string">
+      <column length="1" name="initiation"/>
+    </property>
+    <property name="payant" type="string">
+      <column length="1" name="payant"/>
+    </property>
+    <property name="ren" type="string">
+      <column length="1" name="ren"/>
+    </property>
+  </class>
+</hibernate-mapping>

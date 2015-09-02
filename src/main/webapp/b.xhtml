@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+ <h:head><title>Administration des formations</title></h:head>
+ <h:body>
+     <h:form>
+         essai  <h:outputLabel value="#{servicesMB.nomDem}"/>
+         <p:dataTable value="#{servicesMB.servicesList}"  var="service" id="serv" emptyMessage="Il n'y a pas encore de formation." sortBy="#{service.id}">
+            <p:column headerText="Service">
+                 <p:outputLabel value="#{service.libelle}" />
+            </p:column>
+         </p:dataTable>    
+     </h:form>
+</h:body>
+</html>
+

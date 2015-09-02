@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+ <h:head><title>Administration des formations</title></h:head>
+ <h:body>
+     <h:form>        
+         <p:dataTable value="#{servicesMB.servicesList}"  var="service" id="serv" emptyMessage="Il n'y a pas encore de formation." sortBy="#{service.id}">
+            <p:column headerText="Identifiant">
+                 <p:outputLabel value="#{service.id}" />
+            </p:column>
+            <p:column headerText="Service">
+                 <p:outputLabel value="#{service.libelle}" />
+            </p:column>
+            <p:column headerText="Nom demandeur">
+                 <p:outputLabel value="#{service.nom}" />
+            </p:column>
+            <p:column headerText="Prénom demandeur">
+                 <p:outputLabel value="#{service.prenom}" />
+            </p:column>
+            <p:column headerText="Voir la demande">
+                 <a href="../index.xhtml?nomDem=#{service.nom}&amp;prenomDem=#{service.prenom}">Voir</a>
+            </p:column> 
+         </p:dataTable>
+         <p:commandLink id="board" actionListener="#{servicesMB.getBoard}" style="margin-right:20px;" ajax="false" onclick="/*$('pbAjax').start();*/">  
+            <h:outputText value="Générer le tableau" />  
+         </p:commandLink>
+         
+         <p:progressBar widgetVar="pbAjax" ajax="true" value="#{servicesMB.progress}" labelTemplate="{value}%" styleClass="animated" id="pro" interval="2000">  
+            <p:ajax event="complete" listener="#{servicesMB.onComplete}" update="growl"/>  
+         </p:progressBar>
+         <a href="e:\tableau.xls" >Télécharger</a>
+         <p:growl id="growl" />
+     </h:form>
+</h:body>
+</html>
+

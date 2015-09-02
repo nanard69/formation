@@ -1,0 +1,38 @@
+/* 
+    Document   : pagecss
+    Created on : 27 août 2013, 22:10:50
+    Author     : nanard
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.ui-datatable.borderless .ui-datatable-data tr,
+.ui-datatable.borderless .ui-datatable-data-empty tr,
+.ui-datatable.borderless .ui-datatable-data td,
+.ui-datatable.borderless .ui-datatable-data-empty td
+.ui-datatable.borderless .ui-datatable-data th {
+    border-style: none !important;  
+}
+
+.bord2 {
+    border: hidden !important;
+    border-collapse: inherit!important;
+}
+
+.bord2 > thead > tr > th {
+    background: white !important;
+    border: hidden !important;
+}
+
+/*.ui-widget {
+    font-size: 14px !important;
+}*/
+
+.ui-widget, .ui-widget .ui-widget {
+font-size: 90% !important;
+}
+
+.ui-layout, .ui-layout-doc, .ui-layout-unit, .ui-layout-wrap, .ui-layout-bd, .ui-layout-hd{
+    border: none;
+}
+

@@ -1,0 +1,458 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+ <h:head>
+     <title>Recensement des formations</title>
+     <LINK rel="stylesheet" type="text/css" href="pagecss.css"/>
+ </h:head>
+ 
+ <h:body onload="if('#{agentsMB.serviceDem.libelle}'.length==0){confirmation.show();}">
+     <h:form id="general">
+      
+         <p:confirmDialog id="confirmDialog" header="Informations" severity="info" widgetVar="confirmation" closable="false">
+             <f:facet name="message">
+                Ce formulaire permet d'établir le plan de formation pour l'année <h:outputText value="#{session.lastAccessedTime+31536000000}"><f:convertDateTime pattern="yyyy" type="date" /></h:outputText>.<br/> 
+                Il est donc important qu'il soit complété avec le plus d'informations possible. Toute formation non inscrite dans ce formulaire ne<br/> pourra être prise en compte dans l'arbitrage de celui-ci.
+                <br/><br/>             
+                Merci de respecter les consignes suivantes pour compléter le formulaire :<br/>
+                    - Regrouper toutes les demandes sur un seul formulaire, pour une même direction ou service.<br/>
+                    - Ecrire en majuscule uniquement.<br/>
+                    - Renseigner, impérativement les coûts de formation. Ils sont nécessaire à l'établissement du budget et à l'arbitrage avec le Directeur général des services.
+                <br/><br/>
+                Les chefs de service (hors police municipale) concernés par les formations obligatoires (habilitation électrique, conduite d'engins, SSIAP, FCO, etc ...),<br/> ne doivent plus les renseignés dans ce formulaire. Un tableau Excel vous sera transmis, parallèlement, pour validation.<br/><br/>
+                Avant de continuer, merci de saisir ici votre service : <p:inputText id="serviceDeb" value="#{agentsMB.serviceDem.libelle}" size="60" required="true"><f:validateRequired for="serviceDeb"/></p:inputText><p:message id="serviceDebMessage" for="serviceDeb"/>
+            </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validDeb" icon="ui-icon-check" value="Valider" update="serviceDisplay,serviceDebMessage,projet" actionListener="#{agentsMB.sauveService}" oncomplete="if (!args.validationFailed) confirmation.hide()"/></div>      
+         </p:confirmDialog>
+        
+                <!--    onclick="confirmation.hide();"    oncomplete="if (!args.validationFailed) confirmation.hide()"
+                if(document.getElementById('cacher').value==''){alert('Vous devez d\'abord choisir un agent avant de faire cette action');return false;}
+                -->
+        
+ <p:layout fullPage="true">   
+    <p:layoutUnit position="north" size="135">  
+        <H1 style="text-align: center;">Recensement des besoins en formation pour l'année 
+            <h:outputText value="#{session.lastAccessedTime}">
+                <f:convertDateTime pattern="yyyy" type="date" />
+            </h:outputText> - 
+            <h:outputText value="#{session.lastAccessedTime+31536000000}">
+                <f:convertDateTime pattern="yyyy" type="date" />
+            </h:outputText>
+         </H1>
+        <p:toolbar>  
+            <p:toolbarGroup align="left">
+                <h:inputHidden id="cacher" value="#{agentsMB.selectedAgent.nom}" />
+                <p:commandButton type="button" value="Ajouter un agent" icon="ui-icon-document" onclick="ajoutAgentDiv.show();"/>  
+                <p:commandButton type="button" value="Copier l'agent séléctionné" icon="ui-icon-folder-open" onclick="if(document.getElementById('general:cacher').value==''){alert('Vous devez d\'abord choisir un agent avant de faire cette action');return false;}else{clonerAgentDiv.show();}"/>
+                <p:separator />
+                <p:commandButton title="Supprimer l'agent séléctionné" icon="ui-icon-trash" actionListener="#{agentsMB.supprimerAgent}" update=":general:tableauAgents" onclick="if(document.getElementById('general:cacher').value==''){alert('Vous devez d\'abord choisir un agent avant de faire cette action');return false;}" onsuccess="document.getElementById('general:cacher').value='';"/>  
+            </p:toolbarGroup>  
+            <p:toolbarGroup align="right">  
+                <h:outputText id="serviceDisplay" value="#{agentsMB.serviceDem.libelle}"/>
+            </p:toolbarGroup>  
+        </p:toolbar>        
+    </p:layoutUnit>  
+  
+    <p:layoutUnit position="east" size="265" header="Les formations" resizable="true">
+        <br/>
+        <h:dataTable value="#{agentsMB.typeList}" var="item">
+            <h:column>
+                <p:commandButton type="button" value="#{item.libelle}" style="width:250px;" onclick="if(document.getElementById('general:cacher').value==''){alert('Vous devez d abord choisir un agent avant de faire cette action');}else{ajoutForm#{item.id}.show();}"/>
+            </h:column>
+        </h:dataTable>
+    </p:layoutUnit>  
+  
+    <p:layoutUnit position="center"> 
+        <h3>Projet de service <h:outputText id="counter" /></h3>
+        <h:panelGrid columns="3">
+            <p:inputTextarea id="projet" rows="5" cols="100" counter="counter" maxlength="1000" value="#{agentsMB.serviceDem.projet}" counterTemplate="({0} caractères restants.)" autoResize="false"/>
+            <p:commandButton title="Enregistrer le projet de service" icon="ui-icon-disk" actionListener="#{agentsMB.sauverProjet}" />      
+        </h:panelGrid>
+        <br/>
+       
+         <!--       <p:ajax event="click" onstart="alert('ok');" />   -->
+        <p:dataTable value="#{agentsMB.agentsList}" var="agent" id="tableauAgents" selection="#{agentsMB.selectedAgent}" rowKey="#{agent.id}" styleClass="borderless" tableStyleClass="bord2" emptyMessage="Pour continuer votre recensement, cliquez sur l'onglet 'Ajouter un agent'.">
+            <p:ajax event="rowSelectRadio" update=":general:cacher" />
+             <p:column selectionMode="single" width="1%"/>
+  
+             <p:column>               
+                 <p:fieldset toggleable="true" toggleSpeed="500" collapsed="true" id="zoneA">
+                     <f:facet name="legend">
+                         <p:outputLabel value="#{agent.prenom} #{agent.nom}     " />
+                     </f:facet>   
+                    <h:panelGrid columns="1" cellpadding="10">                            
+                        <p:dataTable value="#{agent.formationList}"  var="formation" id="formation" emptyMessage="Cet agent n'a pas de formation." sortBy="#{formation.id}">
+                            <p:column headerText="Type" style="font-size:70%;">
+                                <p:outputLabel value="#{formation.typeformations.libelle}" />
+                             </p:column>
+                             <p:column headerText="Intitulé" style="font-size:70%;">
+                                 <p:outputLabel value="#{formation.intitule}" rendered="#{formation.intitule!=null}" />
+                                 <p:outputLabel value="#{formation.listevaleurs.libelle}" rendered="#{formation.listevaleurs!=null}" />
+                             </p:column>
+                            <p:column headerText="Organisme" style="font-size:70%;">
+                                 <p:outputLabel value="#{formation.organisme}" />
+                             </p:column>
+                            <p:column headerText="Coût" style="font-size:70%;">
+                                 <p:outputLabel value="#{formation.cout}" />
+                             </p:column>
+                            <p:column headerText="Debutant" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.debutant)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.debutant)}' />
+                             </p:column>
+                            <p:column headerText="Recyclage" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.reconversion)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.reconversion)}' />
+                             </p:column>
+                            <p:column headerText="Initiation" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.initiation)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.initiation)}' />
+                             </p:column>
+                            <p:column headerText="Payant" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.payant)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.payant)}' />
+                             </p:column>
+                            <p:column headerText="Renouvellement" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.ren)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.ren)}' />
+                             </p:column>
+                            <p:column headerText="DIF" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.dif)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.dif)}' />
+                             </p:column>
+                            <p:column headerText="Projet" style="font-size:70%;">
+                                 <p:outputLabel value="Oui" rendered='#{"t".equals(formation.projet)}' />
+                                 <p:outputLabel value="Non" rendered='#{"f".equals(formation.projet)}' />
+                             </p:column>
+                            <p:column style="width:3%">         
+                                <p:commandButton id="deleteButton" actionListener="#{agentsMB.supprimerFormation(formation)}" update=":general:tableauAgents:formation" icon="ui-icon-trash" title="Supprimer une formation"/>      
+                            </p:column>
+                          </p:dataTable>
+                    </h:panelGrid>     
+                 </p:fieldset>
+             </p:column>
+         </p:dataTable>
+    </p:layoutUnit>  
+  
+</p:layout>
+  </h:form>
+     
+   <h:form id="ajoutagentform">
+             
+         <p:confirmDialog id="ajoutAgentDiv" header="Ajouter un agent" severity="info" widgetVar="ajoutAgentDiv">
+             <f:facet name="message">
+                <h:outputText value="Veuillez saisir le nom et le prénom de l'agent puis cliquez sur la bouton enregistrer" /> 
+                <h:panelGrid columns="3">  
+                    <h:outputLabel for="nomAgent" value="Nom de l'agent: *" />  
+                    <p:inputText id="nomAgent" value="#{agentsMB.agent.nom}" required="true" label="Nom">
+                        <f:validateRequired for="nomAgent"/>
+                        <f:validateLength minimum="2" for="nomAgent"/>  
+                    </p:inputText>  
+                    <p:message for="nomAgent" id="nomAgentMess"/>  
+  
+                    <h:outputLabel for="prenomAgent" value="Prenom de l'agent: *" />  
+                    <p:inputText id="prenomAgent" value="#{agentsMB.agent.prenom}" required="true" label="Prenom"/>  
+                    <p:message for="prenomAgent" id="prenomAgentMess"/>  
+                </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validAgent" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterAgent}" update=":general:tableauAgents,nomAgentMess,prenomAgentMess" oncomplete="if (!args.validationFailed) ajoutAgentDiv.hide()"/></div>      
+         </p:confirmDialog>
+   </h:form>
+
+    <h:form id="polform">            
+         <p:confirmDialog id="ajoutForm1" header="Ajouter une formation police pour un agent" severity="info" widgetVar="ajoutForm1">
+             <f:facet name="message">
+                <h:outputText value="Choisissez la formation pour l'agent dans la liste suivante :" /> 
+                <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                    <f:selectItems value="#{agentsMB.police}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                </p:selectOneMenu>              
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormPol" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterPolice}" oncomplete="if (!args.validationFailed) ajoutForm1.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="alphaform">            
+         <p:confirmDialog id="ajoutForm7" header="Ajouter une formation alphabétisation pour un agent" severity="info" widgetVar="ajoutForm7">
+             <f:facet name="message">
+                <h:outputText value="Vous allez inscrire un agent à la formation alphabétisation. Cliquez sur enregistrer pour valider votre choix." />               
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormAlpha" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterAlpha}" oncomplete="if (!args.validationFailed) ajoutForm7.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="hyform">            
+         <p:confirmDialog id="ajoutForm3" header="Ajouter une formation Hygiène et sécurité et habilitations pour un agent" severity="info" widgetVar="ajoutForm3">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="Choisissez la formation pour l'agent dans la liste suivante :" /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.hygiene}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="Débutant: " /><p:selectBooleanCheckbox value="#{agentsMB.debutant}" />
+                    <h:outputText value="Recyclage: " /><p:selectBooleanCheckbox value="#{agentsMB.reconversion}" />
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormHyg" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterHygiene}" oncomplete="if (!args.validationFailed) ajoutForm3.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="infoform">            
+         <p:confirmDialog id="ajoutForm14" header="Ajouter une formation informatique (formateur interne) pour un agent" severity="info" widgetVar="ajoutForm14">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="La mairie ne dispense que les formations Excel, Word, Powerpoint, Internet initiation. Toutes les autres doivent être inscrites dans les formations CNFPT." /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.informatique}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormInfo" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterInfo}" oncomplete="if (!args.validationFailed) ajoutForm14.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="examform">            
+         <p:confirmDialog id="ajoutForm5" header="Ajouter un examen professionnel pour un agent" severity="info" widgetVar="ajoutForm5">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="Choisissez un examen pour l'agent dans la liste suivante :" /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.examens}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormExam" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterExam}" oncomplete="if (!args.validationFailed) ajoutForm5.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="concform">            
+         <p:confirmDialog id="ajoutForm4" header="Ajouter un concours pour un agent" severity="info" widgetVar="ajoutForm4">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="Choisissez un concours pour l'agent dans la liste suivante :" /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.concours}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormConc" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterConcours}" oncomplete="if (!args.validationFailed) ajoutForm4.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="diploform">            
+         <p:confirmDialog id="ajoutForm11" header="Ajouter une formation diplômante ou qualifiante pour un agent" severity="info" widgetVar="ajoutForm11">
+             <f:facet name="message">
+                 <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputLabel for="diploOrganisme" value="Organisme: *" />
+                    <p:inputText id="diploOrganisme" value="#{agentsMB.organisme}" required="true" label="Organisme">
+                        <f:validateRequired for="diploOrganisme"/>
+                        <f:validateLength minimum="2" for="diploOrganisme"/>  
+                    </p:inputText>  
+                    <p:message for="diploOrganisme" id="diploOrganismeMess"/>
+                    <h:outputLabel for="diploIntitu" value="Intitulé: *" />
+                    <p:inputText id="diploIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
+                        <f:validateRequired for="diploIntitu"/>
+                        <f:validateLength minimum="2" for="diploIntitu"/>  
+                    </p:inputText>
+                    <p:message for="diploIntitu" id="diploIntituMess"/>
+                    <h:outputLabel for="diploCout" value="Coût: *" />
+                    <p:inputText id="diploCout" value="#{agentsMB.cout}" required="true" label="Coût">
+                        <f:validateRequired for="diploCout"/>
+                        <f:validateLength minimum="1" for="diploCout"/>
+                        <f:validateLongRange for="diploCout" maximum="9999" />
+                    </p:inputText>
+                    <p:message for="diploCout" id="diploCoutMess"/>
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormDiplo" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterDiplome}" oncomplete="if (!args.validationFailed) ajoutForm11.hide()" update=":general:tableauAgents,diploIntituMess,diploOrganismeMess,diploCoutMess"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="vaeform">            
+         <p:confirmDialog id="ajoutForm12" header="Ajouter une VAE (Validation des Acquis et l'Expérience) pour un agent" severity="info" widgetVar="ajoutForm12">
+             <f:facet name="message">
+                 <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputLabel for="vaeOrganisme" value="Organisme: *" />
+                    <p:inputText id="vaeOrganisme" value="#{agentsMB.organisme}" required="true" label="Organisme">
+                        <f:validateRequired for="vaeOrganisme"/>
+                        <f:validateLength minimum="2" for="vaeOrganisme"/>  
+                    </p:inputText>  
+                    <p:message for="vaeOrganisme" id="vaeOrganismeMess"/>
+                    <h:outputLabel for="vaeIntitu" value="Intitulé: *" />
+                    <p:inputText id="vaeIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
+                        <f:validateRequired for="vaeIntitu"/>
+                        <f:validateLength minimum="2" for="vaeIntitu"/>  
+                    </p:inputText>  
+                    <p:message for="vaeIntitu" id="vaeIntituMess"/>
+                    <h:outputLabel for="vaeCout" value="Coût: *" />
+                    <p:inputText id="vaeCout" value="#{agentsMB.cout}" required="true" label="Coût">
+                        <f:validateRequired for="vaeCout"/>
+                        <f:validateLength minimum="1" for="vaeCout"/>
+                        <f:validateLongRange for="vaeCout" maximum="9999" />
+                    </p:inputText>  
+                    <p:message for="vaeCout" id="vaeCoutMess"/>
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormVAE" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterVAE}" oncomplete="if (!args.validationFailed) ajoutForm12.hide()" update=":general:tableauAgents,vaeOrganismeMess,vaeIntituMess,vaeCoutMess"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="logiform">            
+         <p:confirmDialog id="ajoutForm9" header="Ajouter une formation logiciel pour un agent" severity="info" widgetVar="ajoutForm9">
+             <f:facet name="message">
+                 <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputLabel for="logiOrganisme" value="Organisme: *" />
+                    <p:inputText id="logiOrganisme" value="#{agentsMB.organisme}" required="true" label="Organisme">
+                        <f:validateRequired for="logiOrganisme"/>
+                        <f:validateLength minimum="2" for="logiOrganisme"/>  
+                    </p:inputText>  
+                    <p:message for="logiOrganisme" id="logiOrganismeMess"/>
+                    <h:outputLabel for="logiIntitu" value="Intitulé: *" />
+                    <p:inputText id="logiIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
+                        <f:validateRequired for="logiIntitu"/>
+                        <f:validateLength minimum="2" for="logiIntitu"/>  
+                    </p:inputText>  
+                    <p:message for="logiIntitu" id="logiIntituMess"/>                    
+                    <h:outputLabel for="logiCout" value="Coût: *" />
+                    <p:inputText id="logiCout" value="#{agentsMB.cout}" required="true" label="Coût">
+                        <f:validateRequired for="logiCout"/>
+                        <f:validateLength minimum="1" for="logiCout"/>
+                        <f:validateLongRange for="logiCout" maximum="9999" />
+                    </p:inputText>  
+                    <p:message for="logiCout" id="logiCoutMess"/>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" /><span/>
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormLogi" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterLogi}" oncomplete="if (!args.validationFailed) ajoutForm9.hide()" update=":general:tableauAgents,logiOrganismeMess,logiIntituMess,logiCoutMess"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="francform">            
+         <p:confirmDialog id="ajoutForm6" header="Ajouter une formation de remise à niveau en Français et Mathématiques pour un agent" severity="info" widgetVar="ajoutForm6">
+             <f:facet name="message">
+                <h:outputText value="Vous allez inscrire un agent à une formation de remise à niveau en Français et Mathématiques. Cliquez sur enregistrer pour valider votre choix." />               
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormFranc" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterFranc}" oncomplete="if (!args.validationFailed) ajoutForm6.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="orgaform">            
+         <p:confirmDialog id="ajoutForm10" header="Ajouter une formation réalisée par un organisme privé pour un agent" severity="info" widgetVar="ajoutForm10">
+             <f:facet name="message">
+                 <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputLabel for="orgaOrganisme" value="Organisme: *" />
+                    <p:inputText id="orgaOrganisme" value="#{agentsMB.organisme}" required="true" label="Organisme">
+                        <f:validateRequired for="orgaOrganisme"/>
+                        <f:validateLength minimum="2" for="orgaOrganisme"/>  
+                    </p:inputText>  
+                    <p:message for="orgaOrganisme" id="orgaOrganismeMess"/>
+                    <h:outputLabel for="orgaIntitu" value="Intitulé: *" />
+                    <p:inputText id="orgaIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
+                        <f:validateRequired for="orgaIntitu"/>
+                        <f:validateLength minimum="2" for="orgaIntitu"/>  
+                    </p:inputText>  
+                    <p:message for="orgaIntitu" id="orgaIntituMess"/>    
+                    <h:outputLabel for="orgaCout" value="Coût: *" />
+                    <p:inputText id="orgaCout" value="#{agentsMB.cout}" required="true" label="Coût">
+                        <f:validateRequired for="orgaCout"/>
+                        <f:validateLength minimum="1" for="orgaCout"/>
+                        <f:validateLongRange for="orgaCout" maximum="9999" />
+                    </p:inputText>  
+                    <p:message for="orgaCout" id="orgaCoutMess"/>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" /><span/>
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormOrga" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterOrga}" oncomplete="if (!args.validationFailed) ajoutForm10.hide()" update=":general:tableauAgents,orgaOrganismeMess,orgaIntituMess,orgaCoutMess"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="cnfptform">            
+         <p:confirmDialog id="ajoutForm2" header="Ajouter une formation CNFPT pour un agent" severity="info" widgetVar="ajoutForm2">
+             <f:facet name="message">
+                 <h:outputText value="Les formations CNFPT ne sont pas toutes gratuites. Dans le cas d'une formation informatique, merci de cocher la case payant." />
+                 <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputLabel for="cnfptIntitu" value="Intitulé: *" />
+                    <p:inputText id="cnfptIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
+                        <f:validateRequired for="cnfptIntitu"/>
+                        <f:validateLength minimum="2" for="cnfptIntitu"/>  
+                    </p:inputText>  
+                    <p:message for="cnfptIntitu" id="cnfptIntituMess"/>
+                    <h:outputText value="Payant: " /><p:selectBooleanCheckbox value="#{agentsMB.payant}" /><span/>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" /><span/>
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormCNFPT" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterCNFPT}" oncomplete="if (!args.validationFailed) ajoutForm2.hide()" update=":general:tableauAgents,cnfptIntituMess"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="prepaexamform">            
+         <p:confirmDialog id="ajoutForm17" header="Ajouter une préparation à examen professionnel pour un agent" severity="info" widgetVar="ajoutForm17">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="Choisissez la préparation pour l'agent dans la liste suivante :" /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.prepaexamens}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormPrepaExam" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterPrepaExam}" oncomplete="if (!args.validationFailed) ajoutForm17.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>  
+   
+   <h:form id="prepaconcform">            
+         <p:confirmDialog id="ajoutForm16" header="Ajouter une préparation à concours pour un agent" severity="info" widgetVar="ajoutForm16">
+             <f:facet name="message">
+                 <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                    <h:outputText value="Choisissez un concours pour l'agent dans la liste suivante :" /> 
+                    <p:selectOneMenu value="#{agentsMB.selectedFormation}" effect="fade" var="p">
+                        <f:selectItems value="#{agentsMB.prepaconcours}" var="formatio" itemLabel="#{formatio.libelle}" itemValue="#{formatio.id.toString()}"/>  
+                    </p:selectOneMenu>
+                    <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" />
+                    <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" />
+                 </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;"><p:commandButton id="validFormPrepaConc" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterPrepaConcours}" oncomplete="if (!args.validationFailed) ajoutForm16.hide()" update=":general:tableauAgents"/></div>      
+         </p:confirmDialog>
+   </h:form>
+     
+   <h:form id="cloneragentform">
+             
+         <p:confirmDialog id="clonerAgentDiv" header="Créer un agent à partir des informations d'un autre." severity="info" widgetVar="clonerAgentDiv">
+             <f:facet name="message">
+                <h:outputText value="Veuillez saisir le nom et le prénom de l'agent puis cliquez sur la bouton enregistrer" /> 
+                <h:panelGrid columns="3">  
+                    <h:outputLabel for="clonernomAgent" value="Nom de l'agent: *" />  
+                    <p:inputText id="clonernomAgent" value="#{agentsMB.nom}" required="true" label="Nom">
+                        <f:validateRequired for="clonernomAgent"/>
+                        <f:validateLength minimum="2" for="clonernomAgent"/>  
+                    </p:inputText>  
+                    <p:message for="clonernomAgent" id="clonernomAgentMess"/>  
+  
+                    <h:outputLabel for="clonerprenomAgent" value="Prenom de l'agent: *" />  
+                    <p:inputText id="clonerprenomAgent" value="#{agentsMB.prenom}" required="true" label="Prenom"/>  
+                    <p:message for="clonerprenomAgent" id="clonerprenomAgentMess"/>  
+                </h:panelGrid>
+             </f:facet>
+             <div style="text-align: center;">
+                 <p:commandButton id="validAgent" icon="ui-icon-check" value="Enregistrer et ajouter un autre agent" actionListener="#{agentsMB.copierAgent}" update=":general:tableauAgents,clonernomAgentMess,clonerprenomAgentMess,clonernomAgent,clonerprenomAgent" />
+                 <p:commandButton value="Quitter" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="clonerAgentDiv.hide();"/>
+             </div>      
+         </p:confirmDialog>
+   </h:form>  
+     
+</h:body>
+</html>

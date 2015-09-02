@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+ <h:head><title>Recensement des formations</title></h:head>
+ 
+ <h:body onload="if('#{agentsMB.serviceDem.libelle}'.length==0){confirmation.show();}">
+     <h:form id="general">
+         
+         <p:confirmDialog id="confirmDialog" header="Informations" severity="info" widgetVar="confirmation">
+             <f:facet name="message">
+                Il est important de bien compléter ce formulaire et que toutes formations non inscrites dans ce formulaire ne pourront être prise en compte<br/> dans l'arbitrage du plan de formation 2014.
+                <br/><br/>             
+                Merci de respecter les consignes suivantes pour compléter le formulaire<br/>
+                    - au sein d'une même direction ou service, merci de regrouper toutes les demandes sur un seul formulaire.<br/>
+                    - écrire en majuscule uniquement<br/>
+                    - les coûts de formation sont à indiquer et nécessaire à l'établissement du budget et à l'arbitrage avec le Directeur général des services
+                <br/><br/>
+                Pour les chefs de service qui sont concernés par des recyclages (habilitation électrique, conduite d'engins, SSIAP, FCO, etc ...),<br/> joint au mail vous trouverez un fichier EXCEL reprenant les agents qu'il sera nécessaire d' inscrire sur le formulaire.<br/><br/>
+                Avant de continuer, merci de saisir ici votre service : <p:inputText id="serviceDeb" value="#{agentsMB.serviceDem.libelle}" size="60" required="true"><f:validateRequired for="serviceDeb"/></p:inputText><p:message id="serviceDebMessage" for="serviceDeb"/>
+            </f:facet>
+             <p:commandButton id="validDeb" icon="ui-icon-check" value="Valider" update="serviceDisplay,serviceDebMessage,projet" actionListener="#{agentsMB.sauveService}" oncomplete="if (!args.validationFailed) confirmation.hide()"/>      
+         </p:confirmDialog>
+        
+                <!--    onclick="confirmation.hide();"    oncomplete="if (!args.validationFailed) confirmation.hide()"-->
+  
+        
+ <p:layout fullPage="true">   
+    <p:layoutUnit position="north" size="175">  
+         <H1>Recensement des besoins en formation pour l'année 
+            <h:outputText value="#{session.lastAccessedTime}">
+                <f:convertDateTime pattern="yyyy" type="date" />
+            </h:outputText> - 
+            <h:outputText value="#{session.lastAccessedTime+31536000000}">
+                <f:convertDateTime pattern="yyyy" type="date" />
+            </h:outputText>
+         </H1>
+        <p:toolbar>  
+            <p:toolbarGroup align="left">  
+                <p:commandButton type="button" value="Ajouter un agent" icon="ui-icon-document" onclick="ajoutAgentDiv.show()"/>  
+                <p:commandButton type="button" value="Copier l'agent séléctionné" icon="ui-icon-folder-open"/>  
+                <p:separator />  
+                <p:commandButton type="button" title="Supprimer l'agent séléctionné" icon="ui-icon-trash"/>  
+            </p:toolbarGroup>  
+            <p:toolbarGroup align="right">  
+                <h:outputText id="serviceDisplay" value="#{agentsMB.serviceDem.libelle}"/>
+            </p:toolbarGroup>  
+        </p:toolbar>        
+    </p:layoutUnit>  
+  
+    <p:layoutUnit position="east" size="290" header="Les formations" resizable="true">
+        <br/>
+        <h:dataTable value="#{agentsMB.typeList}" var="item">
+            <h:column>
+                <p:commandButton type="button" value="#{item.libelle}" style="width:250px;" onclick="ajoutFormPolDiv.show()"/>
+            </h:column>
+        </h:dataTable>
+    </p:layoutUnit>  
+  
+    <p:layoutUnit position="center"> 
+        <h3>Projet de service <h:outputText id="counter" /></h3>
+        <p:inputTextarea id="projet" rows="5" cols="100" counter="counter" maxlength="1000" value="#{agentsMB.serviceDem.projet}" counterTemplate="({0} caractères restants.)" autoResize="false"/>  
+        <br/>
+       
+         <!--       <p:ajax event="click" onstart="alert('ok');" />  -->
+         <p:dataTable value="#{agentsMB.agentsList}" var="agent" id="tableauAgents" selection="#{agentsMB.selectedAgent}" rowKey="#{agent.id}">
+             <p:column selectionMode="single" width="1%"/>
+  
+             <p:column>               
+                 <p:fieldset toggleable="true" toggleSpeed="500" collapsed="true" >
+                     <f:facet name="legend">
+                         <p:outputLabel value="#{agent.prenom} #{agent.nom}     " />
+                     </f:facet> 
+                    <h:panelGrid columns="1" cellpadding="10">                            
+                     
+                    </h:panelGrid>                     
+                 </p:fieldset>
+             </p:column>
+         </p:dataTable>
+         <table>
+             <tr>
+                <td><h:outputLabel for="id" value="Id : " /></td>
+                <td><p:inputText id="id" value="#{agentsMB.id}">
+                        <f:converter converterId="javax.faces.Integer"/>
+                        <p:ajax event="blur" update="idMsg" />
+                    </p:inputText>
+                    <p:message id="idMsg" for="id" display="icon"/>
+                </td>
+             </tr>
+             <tr>
+                <td><h:outputLabel for="nom" value="Nom : " /></td>
+                <td><p:inputText id="nom" value="#{agentsMB.nom}">
+                        <f:validateLength minimum="1" />
+                        <p:ajax event="blur" update="nomMsg" />
+                    </p:inputText>
+                    <p:message id="nomMsg" for="nom" display="icon"/>
+                </td>
+             </tr>
+             <tr>
+                <td><h:outputLabel for="prenom" value="Prenom : " /></td>
+                <td><p:inputText id="prenom" value="#{agentsMB.prenom}">
+                        <f:validateLength minimum="1" />
+                        <p:ajax event="blur" update="prenomMsg" />
+                    </p:inputText>
+                    <p:message id="prenomMsg" for="prenom" display="icon"/>
+                </td>
+             </tr>
+             <tr>
+                <td><h:outputLabel for="services" value="Service : " /></td>
+                <td><p:inputText id="services" value="#{agentsMB.services.id}">
+                        <p:ajax event="blur" update="servicesMsg" />
+                    </p:inputText>
+                    <p:message id="servicesMsg" for="services" display="icon"/>
+                </td>
+             </tr>
+             <tr>
+                <td><p:commandButton id="addAgent" value="Add" action="#{agentsMB.addAgent}" ajax="false"/></td>
+                <td><p:commandButton id="reset" value="Reset" action="#{agentsMB.reset}" ajax="false"/></td>
+             </tr>
+         </table>
+    </p:layoutUnit>  
+  
+</p:layout>
+  </h:form>
+     
+   <h:form id="ajoutagentform">
+             
+         <p:confirmDialog id="ajoutAgentDiv" header="Ajouter un agent" severity="info" widgetVar="ajoutAgentDiv">
+             <f:facet name="message">
+                <h:outputText value="Veuillez saisir le nom et le prénom de l'agent puis cliquez sur la bouton enregistrer" /> 
+                <h:panelGrid columns="2">  
+                    <h:outputLabel for="nomAgent" value="Nom de l'agent: *" />  
+                    <p:inputText id="nomAgent" value="#{agentsMB.agent.nom}" required="true" label="nomAgent">  
+                        <f:validateLength minimum="2" />  
+                    </p:inputText>  
+                    <p:message for="nomAgent" />  
+  
+                    <h:outputLabel for="prenomAgent" value="Prenom de l'agent: *" />  
+                    <p:inputText id="prenomAgent" value="#{agentsMB.agent.prenom}" required="true" label="prenomAgent"/>  
+                    <p:message for="prenomAgent" />  
+                </h:panelGrid>
+             </f:facet>
+             <p:commandButton id="validAgent" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterAgent}" update=":general:tableauAgents" oncomplete="if (!args.validationFailed) ajoutAgentDiv.hide()"/>      
+         </p:confirmDialog>
+   </h:form>
+
+    <h:form id="polform">
+             
+         <p:confirmDialog id="ajoutFormPolDiv" header="Ajouter une formation police pour un agent" severity="info" widgetVar="ajoutFormPolDiv">
+             <f:facet name="message">
+                <h:outputText value="Choisissez la formation pour l'agent dans la liste suivante :" /> 
+                 
+               
+             </f:facet>
+             <p:commandButton id="validFormPol" icon="ui-icon-check" value="Enregistrer" actionListener="#{agentsMB.ajouterPolice}" oncomplete="if (!args.validationFailed) ajoutFormPolDiv.hide()"/>      
+         </p:confirmDialog>
+   </h:form>  
+    
+     
+</h:body>
+</html>
+
