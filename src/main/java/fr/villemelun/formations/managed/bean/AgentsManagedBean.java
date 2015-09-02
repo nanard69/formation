@@ -227,6 +227,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setAgents(this.selectedAgent);
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -241,6 +242,7 @@ public class AgentsManagedBean implements Serializable {
        
         formation.setAgents(this.selectedAgent);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -263,6 +265,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -283,6 +286,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -303,6 +307,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -323,6 +328,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -341,6 +347,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setIntitule(this.intitule.toUpperCase());
         formation.setCout(this.cout);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -359,6 +366,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setIntitule(this.intitule.toUpperCase());
         formation.setCout(this.cout);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -378,6 +386,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setIntitule(this.intitule.toUpperCase());
         formation.setCout(this.cout);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -392,6 +401,7 @@ public class AgentsManagedBean implements Serializable {
        
         formation.setAgents(this.selectedAgent);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -411,6 +421,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setIntitule(this.intitule.toUpperCase());
         formation.setCout(this.cout);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -429,6 +440,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setPayant(Boolean.toString(this.payant).substring(0, 1));
         formation.setIntitule(this.intitule.toUpperCase());
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -449,6 +461,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     
@@ -469,6 +482,7 @@ public class AgentsManagedBean implements Serializable {
         formation.setProjet(Boolean.toString(this.projetX).substring(0, 1));
         formation.setListevaleurs(listeVal);
         formation.setTypeformations(type);
+        formation.setOrdre(0);
         this.getFormationsService().addFormations(formation);
     }
     

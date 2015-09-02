@@ -36,6 +36,7 @@ public class Formations  implements java.io.Serializable {
      private String initiation;
      private String payant;
      private String ren;
+     private Integer ordre;
 
     public Formations() {
     }
@@ -45,7 +46,7 @@ public class Formations  implements java.io.Serializable {
         this.typeformations = typeformations;
         this.agents = agents;
     }
-    public Formations(Typeformations typeformations, Listevaleurs listevaleurs, Agents agents, String intitule, String organisme, Integer cout, String projet, String dif, String debutant, String reconversion, String initiation, String perfectionnement, String ren) {
+    public Formations(Typeformations typeformations, Listevaleurs listevaleurs, Agents agents, String intitule, String organisme, Integer cout, String projet, String dif, String debutant, String reconversion, String initiation, String perfectionnement, String ren, Integer ordre) {
        this.typeformations = typeformations;
        this.listevaleurs = listevaleurs;
        this.agents = agents;
@@ -59,6 +60,7 @@ public class Formations  implements java.io.Serializable {
        this.initiation = initiation;
        this.payant = perfectionnement;
        this.ren = ren;
+       this.ordre = ordre;
     }
    
      @Id @GeneratedValue(strategy=IDENTITY)
@@ -189,8 +191,14 @@ public class Formations  implements java.io.Serializable {
         this.ren = ren;
     }
 
+    @Column(name="ordre")
+    public Integer getOrdre() {
+        return ordre;
+    }
 
-
+    public void setOrdre(Integer ordre) {
+        this.ordre = ordre;
+    }
 
 }
 

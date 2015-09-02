@@ -380,7 +380,7 @@
    <h:form id="cnfptform">            
          <p:confirmDialog id="ajoutForm2" header="Ajouter une formation CNFPT pour un agent" severity="info" widgetVar="ajoutForm2">
              <f:facet name="message">
-                 <h:outputText value="Les formations CNFPT ne sont pas toutes gratuites. Dans le cas d'une formation informatique, merci de cocher la case payant." />
+                 <h:outputText value="Saisir uniquement les formations payantes du CNFPT." />
                  <h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
                     <h:outputLabel for="cnfptIntitu" value="Intitulé: *" />
                     <p:inputText id="cnfptIntitu" value="#{agentsMB.intitule}" required="true" label="Intitulé">
@@ -388,7 +388,6 @@
                         <f:validateLength minimum="2" for="cnfptIntitu"/>  
                     </p:inputText>  
                     <p:message for="cnfptIntitu" id="cnfptIntituMess"/>
-                    <h:outputText value="Payant: " /><p:selectBooleanCheckbox value="#{agentsMB.payant}" /><span/>
                     <h:outputText value="DIF: " /><p:selectBooleanCheckbox value="#{agentsMB.dif}" /><span/>
                     <h:outputText value="Projet de service: " /><p:selectBooleanCheckbox value="#{agentsMB.projetX}" /><span/>
                  </h:panelGrid>
