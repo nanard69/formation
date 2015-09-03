@@ -92,7 +92,7 @@ public class AgentsDAO implements IAgentsDAO {
      */
     @Override 
     public List<Agents> getAgents() {
-        List list = getSessionFactory().getCurrentSession().createQuery("from Agents").list();
+        List list = getSessionFactory().getCurrentSession().createQuery("from Agents order by nom").list();
         return list;
     }
     
@@ -102,7 +102,7 @@ public class AgentsDAO implements IAgentsDAO {
      */
     public List<Agents> getAgentsByService(int idService) {
         List list = getSessionFactory().getCurrentSession()
-                                            .createQuery("from Agents where serviceId=?")
+                                            .createQuery("from Agents where serviceId=? order by nom")
                                             .setParameter(0, idService).list();
         return list;
     }

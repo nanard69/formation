@@ -72,14 +72,14 @@
         <br/>
        
          <!--       <p:ajax event="click" onstart="alert('ok');" />   -->
-        <p:dataTable value="#{agentsMB.agentsList}" var="agent" id="tableauAgents" selection="#{agentsMB.selectedAgent}" rowKey="#{agent.id}" styleClass="borderless" tableStyleClass="bord2" emptyMessage="Pour continuer votre recensement, cliquez sur l'onglet 'Ajouter un agent'.">
+         <p:dataTable value="#{agentsMB.agentsList}" var="agent" id="tableauAgents" selection="#{agentsMB.selectedAgent}" rowKey="#{agent.id}" sortBy="#{agent.nom}" styleClass="borderless" tableStyleClass="bord2" emptyMessage="Pour continuer votre recensement, cliquez sur l'onglet 'Ajouter un agent'.">
             <p:ajax event="rowSelectRadio" update=":general:cacher" />
              <p:column selectionMode="single" width="1%"/>
   
              <p:column>               
                  <p:fieldset toggleable="true" toggleSpeed="500" collapsed="true" id="zoneA">
                      <f:facet name="legend">
-                         <p:outputLabel value="#{agent.prenom} #{agent.nom}     " />
+                         <p:outputLabel value="#{agent.nom} #{agent.prenom}     " />
                      </f:facet>   
                     <h:panelGrid columns="1" cellpadding="10">                            
                         <p:dataTable value="#{agent.formationList}"  var="formation" id="formation" emptyMessage="Cet agent n'a pas de formation." sortBy="#{formation.id}">
