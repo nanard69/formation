@@ -39,6 +39,7 @@ public class Agents extends ListDataModel<Agents> implements java.io.Serializabl
      private Services services;
      private String nom;
      private String prenom;
+     private Integer ordre = new Integer(0);
      private Set<Formations> formationses = new TreeSet<Formations>();
 
     public Agents() {
