@@ -90,6 +90,15 @@ public class Agents extends ListDataModel<Agents> implements java.io.Serializabl
         this.nom = nom;
     }
     
+    @Column(name="ordre", nullable=true)
+    public Integer getOrdre() {
+        return ordre;
+    }
+
+    public void setOrdre(Integer ordre) {
+        this.ordre = ordre;
+    }
+    
     @Column(name="prenom", nullable=false, length=128)
     public String getPrenom() {
         return this.prenom;
