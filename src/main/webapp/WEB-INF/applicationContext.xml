@@ -58,7 +58,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <!-- Data Source Declaration -->
     <bean id="DataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" lazy-init="true">
         <property name="driverClass" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://172.16.3.5:3306/formations" />
+        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/formations" />
         <property name="user" value="root" />
         <property name="password" value="" />
         <property name="maxPoolSize" value="10" />
