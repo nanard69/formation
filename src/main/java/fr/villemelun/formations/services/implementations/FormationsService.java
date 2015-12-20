@@ -109,7 +109,7 @@ public class FormationsService implements IFormationsService {
         String tmp1 = "";
         String tmp2 = "";
         
-        resultat.setAlphaForm(getFormationsDAO().getAlphaByServices(idService));
+        resultat.setAlphaForm(getFormationsDAO().getAlphaByServices(idService));  //plus utilisé en 2015
         resultat.setHygiene(getFormationsDAO().getHygByServices(idService));
         resultat.setFrancais(getFormationsDAO().getFrancaisByServices(idService));
         

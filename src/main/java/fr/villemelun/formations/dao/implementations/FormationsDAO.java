@@ -8,6 +8,8 @@ import fr.villemelun.formations.dao.interfaces.IFormationsDAO;
 import fr.villemelun.formations.models.Formations;
 import fr.villemelun.formations.models.ReportBean;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -287,14 +289,24 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getHygByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 3 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 3 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
         }       
         return resultat;
     }

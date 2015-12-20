@@ -300,18 +300,21 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getHygiene().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaHyg.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaHyg.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaHyg.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaHyg.get(((Map.Entry)forma).getKey()+"?")));
+                        formaHyg.put(((Map.Entry)forma).getKey()+"?", val + (int)formaHyg.get(((Map.Entry)forma).getKey()+"?"));
+                        formaHyg.put(((Map.Entry)forma).getKey()+"!", (String)formaHyg.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaHyg.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaHyg.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaHyg.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaHyg.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
