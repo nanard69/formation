@@ -123,10 +123,27 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getFrancaisByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
                 .createSQLQuery("SELECT a.libelle, count(distinct(b.id)) FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 6 and a.id=? group by a.libelle")
                 .setParameter(0, idService).list();
+        
+     /*   for (Iterator it = list.iterator(); it.hasNext();) {
+            Object[] object = (Object[])it.next();
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
+        }       
+        return resultat;*/
+        
         
         if (list!=null && list.size()>0) {
             Object[] ob = (Object[])list.get(0);
@@ -138,14 +155,24 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getCnfptByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT c.intitule, count(distinct(b.id)) FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 2 and a.id=? group by c.intitule")
+                .createSQLQuery("SELECT c.intitule, b.prenom, b.nom FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 2 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
         }
         return resultat;
     }
@@ -153,19 +180,35 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getVaeDipByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
        
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT c.intitule, count(distinct(b.id)), c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId=12 and a.id=? group by c.intitule")
+                .createSQLQuery("SELECT c.intitule, b.prenom, b.nom, c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId=12 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             ReportBean report = new ReportBean();
             Object[] object = (Object[])it.next();
-            report.setCout(object[3]);
-            report.setOrganisme((String)object[2]);
-            report.setCompte(object[1]);
-            resultat.put(object[0], report);
-        }       
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents);
+            }
+        }
+        
          return resultat;
     }
     
@@ -191,37 +234,68 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getInfoByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT c.intitule, count(distinct(b.id)), c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 9 and a.id=? group by c.intitule")
+                .createSQLQuery("SELECT c.intitule, b.prenom, b.nom, c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 9 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             ReportBean report = new ReportBean();
             Object[] object = (Object[])it.next();
-            report.setCout(object[3]);
-            report.setOrganisme((String)object[2]);
-            report.setCompte(object[1]);
-            resultat.put(object[0], report);
-        }       
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents);
+            }
+        }
+        
         return resultat;
     }
     
     @Override
     public Map getAutreByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT c.intitule, count(distinct(b.id)), c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 10 and a.id=? group by c.intitule")
+                .createSQLQuery("SELECT c.intitule, b.prenom, b.nom, c.organisme, c.cout FROM services a, agents b, formations c where a.id=b.serviceId and b.id=c.agentId and typeformationsId = 10 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             ReportBean report = new ReportBean();
             Object[] object = (Object[])it.next();
-            report.setCout(object[3]);
-            report.setOrganisme((String)object[2]);
-            report.setCompte(object[1]);
-            resultat.put(object[0], report);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                report.setCout(object[4]);
+                report.setOrganisme((String)object[3]);
+                report.setNom((String)object[2]);
+                report.setPrenom((String)object[1]);
+                agents.add(report);
+                resultat.put(object[0], agents);
+            }
         }       
         return resultat;
     }
@@ -229,14 +303,24 @@ public class FormationsDAO implements IFormationsDAO {
      @Override
     public Map getConcoursByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 4 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 4 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
         }       
         return resultat;
     }
@@ -244,14 +328,24 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getExamensByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 5 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 5 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
         }       
         return resultat;
     }
@@ -259,29 +353,49 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getPrepExamensByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 17 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 17 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
-        }       
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
+        }        
         return resultat;
     }
     
     @Override
     public Map getPrepConcoursByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 16 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 16 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
         }       
         return resultat;
     }
@@ -314,15 +428,25 @@ public class FormationsDAO implements IFormationsDAO {
     @Override
     public Map getInfosByServices(Short idService) {
         Map resultat = new HashMap();
+        Collection agents;
         
         List list = getSessionFactory().getCurrentSession()
-                .createSQLQuery("SELECT d.libelle, count(distinct(b.id)) FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 14 and a.id=? group by c.listevaleursId")
+                .createSQLQuery("SELECT d.libelle, b.prenom, b.nom FROM services a, agents b, formations c, listevaleurs d where a.id=b.serviceId and b.id=c.agentId and d.id=c.listevaleursId and typeformationsId = 14 and a.id=?")
                 .setParameter(0, idService).list();
         
         for (Iterator it = list.iterator(); it.hasNext();) {
             Object[] object = (Object[])it.next();
-            resultat.put(object[0], object[1]);
-        }       
+            
+            if(resultat.get(object[0])!=null) {
+                agents = (Collection)resultat.get(object[0]);
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents );
+            } else {
+                agents = new ArrayList();
+                agents.add(object[1] + " " + object[2]);
+                resultat.put(object[0], agents);
+            }
+        }        
         return resultat;
     }
     
