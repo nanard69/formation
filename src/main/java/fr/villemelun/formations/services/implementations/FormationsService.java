@@ -9,7 +9,10 @@ import fr.villemelun.formations.models.FormaServ;
 import fr.villemelun.formations.models.Formations;
 import fr.villemelun.formations.models.ReportBean;
 import fr.villemelun.formations.services.interfaces.IFormationsService;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,20 +111,17 @@ public class FormationsService implements IFormationsService {
         FormaServ resultat = new FormaServ();
         String tmp1 = "";
         String tmp2 = "";
+        Collection tmpCol;
         
-        resultat.setAlphaForm(getFormationsDAO().getAlphaByServices(idService));  //plus utilisé en 2015
+        //resultat.setAlphaForm(getFormationsDAO().getAlphaByServices(idService));  //plus utilisé en 2015
         resultat.setHygiene(getFormationsDAO().getHygByServices(idService));
-        resultat.setFrancais(getFormationsDAO().getFrancaisByServices(idService));
-        
+        resultat.setFrancais(getFormationsDAO().getFrancaisByServices(idService));     
         resultat.setLogi(getFormationsDAO().getInfosByServices(idService));
-        for (Object entry : resultat.getLogi().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setLogi2(new HashMap());
-        resultat.getLogi2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
+        resultat.setPrepConcours(getFormationsDAO().getPrepConcoursByServices(idService));
+        resultat.setPrepExams(getFormationsDAO().getPrepExamensByServices(idService));
+        resultat.setConcours(getFormationsDAO().getConcoursByServices(idService));
+        resultat.setExamens(getFormationsDAO().getExamensByServices(idService));
+        resultat.setCnfpt(getFormationsDAO().getCnfptByServices(idService));       
         
         resultat.setPolice(getFormationsDAO().getPoliceServices(idService));
         for (Object entry : resultat.getPolice().entrySet()) {
@@ -131,76 +131,38 @@ public class FormationsService implements IFormationsService {
         resultat.setPolice2(new HashMap());
         resultat.getPolice2().put(tmp1, tmp2);
         tmp1 = new String("");
-        tmp2 = new String("");
-        
-        resultat.setCnfpt(getFormationsDAO().getCnfptByServices(idService));       
-        for (Object entry : resultat.getCnfpt().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setCnfpt2(new HashMap());
-        resultat.getCnfpt2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
-        
-        resultat.setConcours(getFormationsDAO().getConcoursByServices(idService));
-        for (Object entry : resultat.getConcours().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setConcours2(new HashMap());
-        resultat.getConcours2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
-        
-        resultat.setExamens(getFormationsDAO().getExamensByServices(idService));
-        for (Object entry : resultat.getExamens().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setExamens2(new HashMap());
-        resultat.getExamens2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
-        
-        resultat.setPrepConcours(getFormationsDAO().getPrepConcoursByServices(idService));
-        for (Object entry : resultat.getPrepConcours().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setPrepConcours2(new HashMap());
-        resultat.getPrepConcours2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
-        
-        resultat.setPrepExams(getFormationsDAO().getPrepExamensByServices(idService));
-        for (Object entry : resultat.getPrepExams().entrySet()) {
-            tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
-            tmp2 = tmp2 + ((Map.Entry)entry).getValue() + "\n";
-        }
-        resultat.setPrepExams2(new HashMap());
-        resultat.getPrepExams2().put(tmp1, tmp2);
-        tmp1 = new String("");
-        tmp2 = new String("");
+        tmp2 = new String("");                  
         
         resultat.setVae(getFormationsDAO().getVaeDipByServices(idService));
         ReportBean tmpBean = new ReportBean();
         for (Object entry : resultat.getVae().entrySet()) {
+            tmpCol = (ArrayList)((Map.Entry)entry).getValue();
             tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
             if(tmpBean.getCompte()!=null) {
-                tmpBean.setCompte(tmpBean.getCompte() + ((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(tmpBean.getCompte() + String.valueOf(tmpCol.size()) + "\n");
             }else {
-                tmpBean.setCompte(((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(String.valueOf(tmpCol.size()) + "\n");
             }
-            tmpBean.setOrganisme(tmpBean.getOrganisme() + ((ReportBean)((Map.Entry)entry).getValue()).getOrganisme() + "\n");
-            if(tmpBean.getCout()!=null) {
-                tmpBean.setCout(tmpBean.getCout() + ((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            } else {
-                tmpBean.setCout(((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            }    
+            
+            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                ReportBean formaVAETmp = (ReportBean)it.next();
+                
+                tmpBean.setOrganisme(tmpBean.getOrganisme() + formaVAETmp.getOrganisme());
+                tmpBean.setNom(tmpBean.getNom() + " " + formaVAETmp.getPrenom() + " " + formaVAETmp.getNom());
+                if(tmpBean.getCout()!=null) {
+                    tmpBean.setCout(tmpBean.getCout() + formaVAETmp.getCout().toString());
+                } else {
+                    tmpBean.setCout(formaVAETmp.getCout().toString());
+                }
+            }
+            tmpBean.setOrganisme(tmpBean.getOrganisme() + "\n");
+            tmpBean.setNom(tmpBean.getNom() + "\n");
+            tmpBean.setCout(tmpBean.getCout() + "\n");
         }
         resultat.setVae2(new HashMap());
-        resultat.getVae2().put(tmp1, tmpBean);
+        if(tmp1!="") {
+           resultat.getVae2().put(tmp1, tmpBean);
+        }
         tmp1 = new String("");
         
         resultat.setDiplo(getFormationsDAO().getDipByServices(idService));
@@ -226,41 +188,66 @@ public class FormationsService implements IFormationsService {
         resultat.setInfo(getFormationsDAO().getInfoByServices(idService));
         tmpBean = new ReportBean();
         for (Object entry : resultat.getInfo().entrySet()) {
+            tmpCol = (ArrayList)((Map.Entry)entry).getValue();
             tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
             if(tmpBean.getCompte()!=null) {
-                tmpBean.setCompte(tmpBean.getCompte() + ((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(tmpBean.getCompte() + String.valueOf(tmpCol.size()) + "\n");
             }else {
-                tmpBean.setCompte(((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(String.valueOf(tmpCol.size()) + "\n");
             }
-            tmpBean.setOrganisme(tmpBean.getOrganisme() + ((ReportBean)((Map.Entry)entry).getValue()).getOrganisme() + "\n");
-            if(tmpBean.getCout()!=null) {
-                tmpBean.setCout(tmpBean.getCout() + ((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            } else {
-                tmpBean.setCout(((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            }    
+            
+            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                ReportBean formaInfoTmp = (ReportBean)it.next();
+                
+                tmpBean.setOrganisme(tmpBean.getOrganisme() + formaInfoTmp.getOrganisme());
+                tmpBean.setNom(tmpBean.getNom() + " " + formaInfoTmp.getPrenom() + " " + formaInfoTmp.getNom());
+                if(tmpBean.getCout()!=null) {
+                    tmpBean.setCout(tmpBean.getCout() + formaInfoTmp.getCout().toString());
+                } else {
+                    tmpBean.setCout(formaInfoTmp.getCout().toString());
+                }
+            }
+            tmpBean.setOrganisme(tmpBean.getOrganisme() + "\n");
+            tmpBean.setNom(tmpBean.getNom() + "\n");
+            tmpBean.setCout(tmpBean.getCout() + "\n");
         }
         resultat.setInfo2(new HashMap());
-        resultat.getInfo2().put(tmp1, tmpBean);
+        if(tmp1!="") {
+           resultat.getInfo2().put(tmp1, tmpBean);
+        }
         tmp1 = new String("");
+        tmpCol = new ArrayList();
         
         resultat.setAutre(getFormationsDAO().getAutreByServices(idService));
         tmpBean = new ReportBean();
         for (Object entry : resultat.getAutre().entrySet()) {
+            tmpCol = (ArrayList)((Map.Entry)entry).getValue();
             tmp1 = tmp1 + ((Map.Entry)entry).getKey() + "\n";
             if(tmpBean.getCompte()!=null) {
-                tmpBean.setCompte(tmpBean.getCompte() + ((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(tmpBean.getCompte() + String.valueOf(tmpCol.size()) + "\n");
             }else {
-                tmpBean.setCompte(((ReportBean)((Map.Entry)entry).getValue()).getCompte().toString() + "\n");
+                tmpBean.setCompte(String.valueOf(tmpCol.size()) + "\n");
             }
-            tmpBean.setOrganisme(tmpBean.getOrganisme() + ((ReportBean)((Map.Entry)entry).getValue()).getOrganisme() + "\n");
-            if(tmpBean.getCout()!=null) {
-                tmpBean.setCout(tmpBean.getCout() + ((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            } else {
-                tmpBean.setCout(((ReportBean)((Map.Entry)entry).getValue()).getCout().toString() + "\n");
-            }    
+            
+            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                ReportBean formaAutreTmp = (ReportBean)it.next();
+                
+                tmpBean.setOrganisme(tmpBean.getOrganisme() + formaAutreTmp.getOrganisme());
+                tmpBean.setNom(tmpBean.getNom() + " " + formaAutreTmp.getPrenom() + " " + formaAutreTmp.getNom());
+                if(tmpBean.getCout()!=null) {
+                    tmpBean.setCout(tmpBean.getCout() + formaAutreTmp.getCout().toString());
+                } else {
+                    tmpBean.setCout(formaAutreTmp.getCout().toString());
+                }
+            }
+            tmpBean.setOrganisme(tmpBean.getOrganisme() + "\n");
+            tmpBean.setNom(tmpBean.getNom() + "\n");
+            tmpBean.setCout(tmpBean.getCout() + "\n");
         }
         resultat.setAutre2(new HashMap());
-        resultat.getAutre2().put(tmp1, tmpBean);
+        if(tmp1!="") {
+           resultat.getAutre2().put(tmp1, tmpBean);
+        }
         tmp1 = new String("");
         
         return resultat;
