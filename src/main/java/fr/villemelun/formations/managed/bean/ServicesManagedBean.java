@@ -24,7 +24,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -180,38 +182,56 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getAutre().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    ReportBean val = (ReportBean)((Map.Entry)forma).getValue();
+                    StringBuilder strbuild = new StringBuilder();
+                    Collection tmpCol = (ArrayList)((Map.Entry)forma).getValue();
+                                              
                     if(formaAutre.get(((Map.Entry)forma).getKey())!=null) {
-                        tmpMap = (Map)formaAutre.get(((Map.Entry)forma).getKey());
-                        Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
-                        String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
-                        String tmpStr2 = entree.getValue() + "\n" + val.getCompte();
-                        formaAutre.put(((Map.Entry)forma).getKey()+"?", ((BigInteger)val.getCompte()).add((BigInteger)formaAutre.get(((Map.Entry)forma).getKey()+"?")));
-                        tmpMap = new HashMap();
-                        tmpMap.put(tmpStr1, tmpStr2);
+                            tmpMap = (Map)formaAutre.get(((Map.Entry)forma).getKey());
+                            Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
+                            String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
+                            String tmpStr2 = entree.getValue() + "\n" + tmpCol.size();
+                            formaAutre.put(((Map.Entry)forma).getKey()+"?", tmpCol.size() + (int) formaAutre.get(((Map.Entry)forma).getKey()+"?"));
+                            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                                ReportBean val = (ReportBean)it.next();
+                                strbuild.append(val.getPrenom()).append(" ").append(val.getNom()).append(",");
+                            }
+                            formaAutre.put(((Map.Entry)forma).getKey()+"!", (String)formaAutre.get(((Map.Entry)forma).getKey()+"!") + "\n" + strbuild.toString());
+                            tmpMap = new HashMap();
+                            tmpMap.put(tmpStr1, tmpStr2);
                     }else{
-                        tmpMap.put(formServ.getService().getLibelle(), val.getCompte());
-                        formaAutre.put(((Map.Entry)forma).getKey()+"?", val.getCompte());                  
+                            tmpMap.put(formServ.getService().getLibelle(), tmpCol.size());
+                            formaAutre.put(((Map.Entry)forma).getKey()+"?", tmpCol.size());
+                            
+                            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                                ReportBean val = (ReportBean)it.next();
+                                strbuild.append(val.getPrenom()).append(" ").append(val.getNom()).append(",");
+                            }
+                            
+                            formaAutre.put(((Map.Entry)forma).getKey()+"!", strbuild.toString());
                     }
-                    formaAutre.put(((Map.Entry)forma).getKey(), tmpMap);                  
+                    
+                    formaAutre.put(((Map.Entry)forma).getKey(), tmpMap); 
                 }
                 
                 //formation CNFPT
                 for (Object forma : formServ.getCnfpt().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaCNFPT.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaCNFPT.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaCNFPT.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaCNFPT.get(((Map.Entry)forma).getKey()+"?")));
+                        formaCNFPT.put(((Map.Entry)forma).getKey()+"?", val + (int)formaCNFPT.get(((Map.Entry)forma).getKey()+"?"));
+                        formaCNFPT.put(((Map.Entry)forma).getKey()+"!", (String)formaCNFPT.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaCNFPT.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaCNFPT.put(((Map.Entry)forma).getKey()+"?", val); 
+                        formaCNFPT.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaCNFPT.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -220,18 +240,21 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getConcours().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaConcours.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaConcours.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaConcours.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaConcours.get(((Map.Entry)forma).getKey()+"?")));
+                        formaConcours.put(((Map.Entry)forma).getKey()+"?", val + (int)formaConcours.get(((Map.Entry)forma).getKey()+"?"));
+                        formaConcours.put(((Map.Entry)forma).getKey()+"!", (String)formaConcours.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaConcours.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaConcours.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaConcours.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaConcours.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -240,18 +263,21 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getExamens().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaExamens.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaExamens.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaExamens.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaExamens.get(((Map.Entry)forma).getKey()+"?")));
+                        formaExamens.put(((Map.Entry)forma).getKey()+"?", val + (int)formaExamens.get(((Map.Entry)forma).getKey()+"?"));
+                        formaExamens.put(((Map.Entry)forma).getKey()+"!", (String)formaExamens.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaExamens.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaExamens.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaExamens.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaExamens.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -260,18 +286,21 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getPrepExams().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaPrepaE.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaPrepaE.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaPrepaE.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaPrepaE.get(((Map.Entry)forma).getKey()+"?")));
+                        formaPrepaE.put(((Map.Entry)forma).getKey()+"?", val + (int)formaPrepaE.get(((Map.Entry)forma).getKey()+"?"));
+                        formaPrepaE.put(((Map.Entry)forma).getKey()+"!", (String)formaPrepaE.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaPrepaE.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaPrepaE.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaPrepaE.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaPrepaE.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -280,18 +309,21 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getPrepConcours().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaPrepaC.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaPrepaC.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaPrepaC.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaPrepaC.get(((Map.Entry)forma).getKey()+"?")));
+                        formaPrepaC.put(((Map.Entry)forma).getKey()+"?", val + (int)formaPrepaC.get(((Map.Entry)forma).getKey()+"?"));
+                        formaPrepaC.put(((Map.Entry)forma).getKey()+"!", (String)formaPrepaC.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaPrepaC.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaPrepaC.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaPrepaC.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaPrepaC.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -323,38 +355,47 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getInfo().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    ReportBean val = (ReportBean)((Map.Entry)forma).getValue();
-                    if(formaInfo.get(((Map.Entry)forma).getKey())!=null) {
-                        tmpMap = (Map)formaInfo.get(((Map.Entry)forma).getKey());
-                        Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
-                        String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
-                        String tmpStr2 = entree.getValue() + "\n" + val.getCompte();
-                        formaInfo.put(((Map.Entry)forma).getKey()+"?", ((BigInteger)val.getCompte()).add((BigInteger)formaInfo.get(((Map.Entry)forma).getKey()+"?")));
-                        tmpMap = new HashMap();
-                        tmpMap.put(tmpStr1, tmpStr2);
-                    }else{
-                        tmpMap.put(formServ.getService().getLibelle(), val.getCompte());
-                        formaInfo.put(((Map.Entry)forma).getKey()+"?", val.getCompte());                  
+                    Collection tmpCol = (ArrayList)((Map.Entry)forma).getValue();
+                    for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                                        
+                        ReportBean val = (ReportBean)it.next();
+                        if(formaInfo.get(((Map.Entry)forma).getKey())!=null) {
+                            tmpMap = (Map)formaInfo.get(((Map.Entry)forma).getKey());
+                            Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
+                            String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
+                            String tmpStr2 = entree.getValue() + "\n" + val.getCompte();
+                            formaInfo.put(((Map.Entry)forma).getKey()+"?", ((BigInteger)val.getCompte()).add((BigInteger)formaInfo.get(((Map.Entry)forma).getKey()+"?")));
+                            formaInfo.put(((Map.Entry)forma).getKey()+"!", (String)formaInfo.get(((Map.Entry)forma).getKey()+"!") + "\n" + val.getPrenom() + " " + val.getNom());
+                            tmpMap = new HashMap();
+                            tmpMap.put(tmpStr1, tmpStr2);
+                        }else{
+                            tmpMap.put(formServ.getService().getLibelle(), val.getCompte());
+                            formaInfo.put(((Map.Entry)forma).getKey()+"?", val.getCompte());
+                            formaInfo.put(((Map.Entry)forma).getKey()+"!", val.getPrenom() + " " + val.getNom());
+                        }
+                        formaInfo.put(((Map.Entry)forma).getKey(), tmpMap);
                     }
-                    formaInfo.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
                 
                   //formation Logiciels
                 for (Object forma : formServ.getLogi().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    BigInteger val = (BigInteger)((Map.Entry)forma).getValue();
+                    int val = ((ArrayList)((Map.Entry)forma).getValue()).size();
+                    String agents = ((ArrayList)((Map.Entry)forma).getValue()).toString();
                     if(formaLogi.get(((Map.Entry)forma).getKey())!=null) {
                         tmpMap = (Map)formaLogi.get(((Map.Entry)forma).getKey());
                         Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
                         String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
                         String tmpStr2 = entree.getValue() + "\n" + val;
-                        formaLogi.put(((Map.Entry)forma).getKey()+"?", val.add((BigInteger)formaLogi.get(((Map.Entry)forma).getKey()+"?")));
+                        formaLogi.put(((Map.Entry)forma).getKey()+"?", val + (int)formaLogi.get(((Map.Entry)forma).getKey()+"?"));
+                        formaLogi.put(((Map.Entry)forma).getKey()+"!", (String)formaLogi.get(((Map.Entry)forma).getKey()+"!") + "\n" + agents);
                         tmpMap = new HashMap();
                         tmpMap.put(tmpStr1, tmpStr2);
                     }else{
                         tmpMap.put(formServ.getService().getLibelle(), val);
-                        formaLogi.put(((Map.Entry)forma).getKey()+"?", val);                  
+                        formaLogi.put(((Map.Entry)forma).getKey()+"?", val);
+                        formaLogi.put(((Map.Entry)forma).getKey()+"!", agents);
                     }
                     formaLogi.put(((Map.Entry)forma).getKey(), tmpMap);                  
                 }
@@ -363,22 +404,35 @@ public class ServicesManagedBean implements Serializable {
                 for (Object forma : formServ.getVae().entrySet()) {
                     tmpMap = new HashMap();
                     
-                    ReportBean val = (ReportBean)((Map.Entry)forma).getValue();
+                    StringBuilder strbuild = new StringBuilder();
+                    Collection tmpCol = (ArrayList)((Map.Entry)forma).getValue();
+                                              
                     if(formaVAE.get(((Map.Entry)forma).getKey())!=null) {
-                        tmpMap = (Map)formaVAE.get(((Map.Entry)forma).getKey());
-                        Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
-                        String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
-                        String tmpStr2 = entree.getValue() + "\n" + val.getCompte();
-                        formaVAE.put(((Map.Entry)forma).getKey()+"?", ((BigInteger)val.getCompte()).add((BigInteger)formaVAE.get(((Map.Entry)forma).getKey()+"?")));
-//                        formaVAE.put(((Map.Entry)forma).getKey()+"!", ((String)formaVAE.get(((Map.Entry)forma).getKey()+"!")) + "\n" + val.getPrenom() + " " + val.getNom());
-                        tmpMap = new HashMap();
-                        tmpMap.put(tmpStr1, tmpStr2);
+                            tmpMap = (Map)formaVAE.get(((Map.Entry)forma).getKey());
+                            Map.Entry entree = (Map.Entry)tmpMap.entrySet().iterator().next();
+                            String tmpStr1 = entree.getKey() + "\n" + formServ.getService().getLibelle();
+                            String tmpStr2 = entree.getValue() + "\n" + tmpCol.size();
+                            formaVAE.put(((Map.Entry)forma).getKey()+"?", tmpCol.size() + (int) formaVAE.get(((Map.Entry)forma).getKey()+"?"));
+                            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                                ReportBean val = (ReportBean)it.next();
+                                strbuild.append(val.getPrenom()).append(" ").append(val.getNom()).append(",");
+                            }
+                            formaVAE.put(((Map.Entry)forma).getKey()+"!", (String)formaVAE.get(((Map.Entry)forma).getKey()+"!") + "\n" + strbuild.toString());
+                            tmpMap = new HashMap();
+                            tmpMap.put(tmpStr1, tmpStr2);
                     }else{
-                        tmpMap.put(formServ.getService().getLibelle(), val.getCompte());
-                        formaVAE.put(((Map.Entry)forma).getKey()+"?", val.getCompte());
-//                        formaVAE.put(((Map.Entry)forma).getKey()+"!", val.getPrenom() + " " + val.getNom());
+                            tmpMap.put(formServ.getService().getLibelle(), tmpCol.size());
+                            formaVAE.put(((Map.Entry)forma).getKey()+"?", tmpCol.size());
+                            
+                            for (Iterator it = tmpCol.iterator(); it.hasNext();) {
+                                ReportBean val = (ReportBean)it.next();
+                                strbuild.append(val.getPrenom()).append(" ").append(val.getNom()).append(",");
+                            }
+                            
+                            formaVAE.put(((Map.Entry)forma).getKey()+"!", strbuild.toString());
                     }
-                    formaVAE.put(((Map.Entry)forma).getKey(), tmpMap);                  
+                    
+                    formaVAE.put(((Map.Entry)forma).getKey(), tmpMap); 
                 }
                 
             }
